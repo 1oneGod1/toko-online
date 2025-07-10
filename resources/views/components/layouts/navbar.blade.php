@@ -19,15 +19,20 @@
                         Admin Toko
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard Admin</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.stock.index') }}"><i class="bi bi-box-seam"></i> Manajemen Stok</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.orders.index') }}"><i class="bi bi-cart-check"></i> Manajemen Pesanan</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('products.index') }}">Manajemen Produk</a></li>
-                        <li><a class="dropdown-item" href="{{ route('categories.index') }}">Manajemen Kategori</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.users.index') }}">Manajemen Pengguna</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.landing.index') }}">Pengaturan Halaman</a></li>
+                        @if(auth()->check() && auth()->user()->role === 'admin')
+                            <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard Admin</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.orders.index') }}"><i class="bi bi-list-check"></i> Manajemen Order</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.stock.index') }}"><i class="bi bi-box-seam"></i> Manajemen Stok</a></li>
+                            <li><a class="dropdown-item" href="{{ route('products.index') }}"><i class="bi bi-box"></i> Manajemen Produk</a></li>
+                            <li><a class="dropdown-item" href="{{ route('categories.index') }}"><i class="bi bi-tags"></i> Manajemen Kategori</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.users.index') }}"><i class="bi bi-people"></i> Manajemen Pengguna</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.landing.index') }}"><i class="bi bi-brush"></i> Pengaturan Halaman</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                        @endif
+                        <li><a class="dropdown-item" href="{{ route('orders.index') }}">Riwayat Pesanan</a></li>
+                        <li><a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Keluar</a></li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
                     </ul>
                 </li>
                 @endcan

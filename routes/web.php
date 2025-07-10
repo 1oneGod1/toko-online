@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\LandingPageController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\DiscussionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,10 +32,10 @@ Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name
 Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 
 // Reviews and Discussions
-Route::post('/products/{product}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
-Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
-Route::post('/products/{product}/discussions', [App\Http\Controllers\DiscussionController::class, 'store'])->name('discussions.store');
-Route::delete('/discussions/{discussion}', [App\Http\Controllers\DiscussionController::class, 'destroy'])->name('discussions.destroy');
+Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+Route::post('/products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
+Route::delete('/discussions/{discussion}', [DiscussionController::class, 'destroy'])->name('discussions.destroy');
 
 // Authentication routes
 Auth::routes();

@@ -21,24 +21,14 @@
         <h1>Daftar Produk</h1>
         
         <div class="row">
-            @forelse($products as $product)
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
-                    @endif
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text">{{ Str::limit($product->description, 100) }}</p>
-                        <p class="card-text"><strong>Rp {{ number_format($product->price, 0, ',', '.') }}</strong></p>
-                        <a href="{{ route('products.show', $product) }}" class="btn btn-primary">Detail</a>
-                    </div>
+            @forelse ($products as $product)
+                <div class="col-md-3 mb-4">
+                    <x-product-card :product="$product" />
                 </div>
-            </div>
             @empty
-            <div class="col-12">
-                <div class="alert alert-info">Belum ada produk tersedia.</div>
-            </div>
+                <div class="col-12">
+                    <div class="alert alert-info">Belum ada produk tersedia.</div>
+                </div>
             @endforelse
         </div>
 
