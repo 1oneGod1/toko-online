@@ -8,8 +8,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\LandingPageController;
+use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\LandingPageSettingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\DiscussionController;
 use Illuminate\Support\Facades\Route;
@@ -89,17 +90,17 @@ Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->group(function () 
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
     // User Management
-    Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
-    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
     // Stock Management
-    Route::get('/stock', [App\Http\Controllers\Admin\StockController::class, 'index'])->name('admin.stock.index');
-    Route::put('/stock/{product}', [App\Http\Controllers\Admin\StockController::class, 'update'])->name('admin.stock.update');
-    Route::put('/stock', [App\Http\Controllers\Admin\StockController::class, 'bulkUpdate'])->name('admin.stock.bulk-update');
+    Route::get('/stock', [StockController::class, 'index'])->name('admin.stock.index');
+    Route::put('/stock/{product}', [StockController::class, 'update'])->name('admin.stock.update');
+    Route::put('/stock', [StockController::class, 'bulkUpdate'])->name('admin.stock.bulk-update');
 
-    // Landing Page Management
-    Route::get('/landing', [LandingPageController::class, 'index'])->name('admin.landing.index');
-    Route::put('/landing', [LandingPageController::class, 'update'])->name('admin.landing.update');
+    // Landing Page Settings
+    Route::get('/landing-settings', [LandingPageSettingController::class, 'index'])->name('admin.landing.index');
+    Route::put('/landing-settings', [LandingPageSettingController::class, 'update'])->name('admin.landing.update');
 });
