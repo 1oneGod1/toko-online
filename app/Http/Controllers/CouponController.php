@@ -65,5 +65,60 @@ class CouponController extends Controller
             'value' => $coupon->value,      // Nilai diskon
             'message' => 'Kupon valid!'
         ]);
+    }    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:50'
+        ]);
+
+        $code = strtoupper(trim($request->input('code')));
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return redirect()->back()->with('error', 'Kupon tidak valid atau tidak ditemukan.');
+        }
+
+        if ($coupon->expires_at && now()->gt($coupon->expires_at)) {
+            return redirect()->back()->with('error', 'Kupon sudah kadaluarsa.');
+        }
+
+        // Ambil total keranjang dari session manual
+        $cart = session()->get('cart', []);
+        $cartTotal = 0;
+        
+        foreach ($cart as $details) {
+            $cartTotal += $details['price'] * $details['quantity'];
+        }
+        
+        if ($cartTotal <= 0) {
+            return redirect()->back()->with('error', 'Keranjang belanja kosong.');
+        }
+        
+        // Hitung diskon berdasarkan tipe kupon
+        $discount = 0;
+        if ($coupon->type == 'percent') {
+            $discount = ($cartTotal * floatval($coupon->value)) / 100;
+        } else {
+            $discount = floatval($coupon->value);
+        }
+        
+        // Pastikan diskon tidak lebih besar dari total belanja
+        $discount = min($discount, $cartTotal);
+        
+        // Simpan informasi kupon ke session dengan struktur yang lengkap
+        session()->put('coupon', [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'discount' => round($discount, 0) // Pastikan ada key 'discount'
+        ]);
+        
+        return redirect()->back()->with('success', "Kupon {$coupon->code} berhasil diterapkan! Diskon Rp " . number_format($discount, 0, ',', '.'));
+    }
+
+    public function destroy()
+    {
+        session()->forget('coupon');
+        return redirect()->back()->with('success', 'Kupon berhasil dihapus.');
     }
 }

@@ -60,6 +60,8 @@
                     <!-- Featured Products Section -->
                     <div class="container py-5">
                         <h2 class="text-center mb-4">Produk Unggulan Kami</h2>
+                        
+
                         <div class="row">
                             @forelse ($featuredProducts as $product)
                                 <div class="col-md-3 mb-4">
@@ -77,6 +79,7 @@
                         </div>
                     </div>
                 </x-layouts.app>
+                    
 
                 <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
                     <div class="text-center text-sm sm:text-left">
@@ -87,6 +90,7 @@
                         Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
                     </div>
                 </div>
+                
             </div>
         </div>
     </body>

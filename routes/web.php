@@ -13,7 +13,11 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LandingPageSettingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,8 +50,14 @@ Route::middleware('auth')->group(function () {
     // Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-    Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/store', [CartController::class, 'store'])->name('cart.store');
+    Route::put('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
+    // Coupon Routes
+    Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
+    Route::delete('/coupons', [CouponController::class, 'destroy'])->name('coupons.destroy');
 
     // Order Routes
     Route::get('/checkout', [OrderController::class, 'create'])->name('orders.create');
@@ -63,6 +73,17 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/reviews/{product}', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/discussions/{product}', [DiscussionController::class, 'store'])->name('discussions.store');
+});
+
+// Route sementara untuk check database
+Route::get('/check-orders', function() {
+    $columns = Schema::getColumnListing('orders');
+    $structure = DB::select('DESCRIBE orders');
+    
+    return response()->json([
+        'columns' => $columns,
+        'structure' => $structure
+    ]);
 });
 
 // Admin routes
@@ -103,4 +124,17 @@ Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->group(function () 
     // Landing Page Settings
     Route::get('/landing-settings', [LandingPageSettingController::class, 'index'])->name('admin.landing.index');
     Route::put('/landing-settings', [LandingPageSettingController::class, 'update'])->name('admin.landing.update');
+
+    // Coupon Management
+        Route::resource('coupons', AdminCouponController::class)->names([
+        'index' => 'admin.coupons.index',
+        'create' => 'admin.coupons.create',
+        'store' => 'admin.coupons.store',
+        'edit' => 'admin.coupons.edit',
+        'update' => 'admin.coupons.update',
+        'destroy' => 'admin.coupons.destroy',
+    ]);
+
+    // Bank Account Management
+    Route::resource('bank-accounts', \App\Http\Controllers\Admin\BankAccountController::class);
 });

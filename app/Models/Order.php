@@ -8,34 +8,83 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = [
         'user_id',
+        'order_number',
+        'name',
+        'address',
+        'shipping_address',
+        'phone',
+        'payment_method',
+        'bank_account_id',
+        'subtotal',
+        'discount',
+        'total',
         'total_amount',
         'status',
-        'payment_method',
-        'shipping_address',
-        'notes'
+        'coupon_code'
     ];
-    
+
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
+
     /**
-     * Mendapatkan pengguna yang memiliki pesanan.
+     * Relationship with User
      */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
-     * Mendapatkan item-item dalam pesanan.
+     * Relationship with OrderItems
      */
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Relationship with BankAccount
+     */
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class);
+    }
+
+    /**
+     * Get status badge color
+     */
+    public function getStatusBadgeAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'warning',
+            'paid' => 'success',
+            'processing' => 'info',
+            'shipped' => 'primary',
+            'delivered' => 'success',
+            'cancelled' => 'danger',
+            default => 'secondary'
+        };
+    }
+
+    /**
+     * Get status label
+     */
+    public function getStatusLabelAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'Menunggu Pembayaran',
+            'paid' => 'Sudah Dibayar',
+            'processing' => 'Diproses',
+            'shipped' => 'Dikirim',
+            'delivered' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
+            default => 'Unknown'
+        };
     }
 }

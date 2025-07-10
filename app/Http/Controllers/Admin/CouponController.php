@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CouponController extends Controller
 {
@@ -27,7 +28,7 @@ class CouponController extends Controller
      */
     public function create()
     {
-        return view('admin.coupons.form');
+        return view('admin.coupons.create');
     }
 
     /**
@@ -36,16 +37,15 @@ class CouponController extends Controller
     public function store(Request $request)
     {
         // Validasi input dari form
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:coupons,code', // Kode kupon wajib, max 50 karakter, harus unik
-            'type' => 'required|in:percent,nominal',                 // Jenis diskon harus 'percent' atau 'nominal'
-            'value' => 'required|integer|min:1',                     // Nilai diskon minimal 1
-            'max_uses' => 'required|integer|min:1',                  // Maksimal penggunaan minimal 1
-            'expires_at' => 'required|date|after:today',             // Tanggal kadaluarsa harus setelah hari ini
+        $validatedData = $request->validate([
+            'code' => 'required|string|unique:coupons,code', // Kode kupon wajib, max 50 karakter, harus unik
+            'type' => ['required', Rule::in(['fixed', 'percent'])],                 // Jenis diskon harus 'percent' atau 'nominal'
+            'value' => 'required|numeric|min:0',                     // Nilai diskon minimal 1
+            'expires_at' => 'nullable|date',             // Tanggal kadaluarsa harus setelah hari ini
         ]);
         
         // Simpan kupon baru ke database
-        Coupon::create($validated);
+        Coupon::create($validatedData);
         
         // Redirect ke halaman index dengan pesan sukses
         return redirect()->route('admin.coupons.index')->with('success', 'Kupon berhasil ditambahkan.');
@@ -57,7 +57,7 @@ class CouponController extends Controller
     public function edit(Coupon $coupon)
     {
         // Return view form dengan data kupon yang akan diedit
-        return view('admin.coupons.form', compact('coupon'));
+        return view('admin.coupons.edit', compact('coupon'));
     }
 
     /**
@@ -66,16 +66,15 @@ class CouponController extends Controller
     public function update(Request $request, Coupon $coupon)
     {
         // Validasi input dengan pengecualian untuk kode kupon saat ini (ignore current id)
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:coupons,code,' . $coupon->id,
-            'type' => 'required|in:percent,nominal',
-            'value' => 'required|integer|min:1',
-            'max_uses' => 'required|integer|min:1',
-            'expires_at' => 'required|date|after:today',
+        $validatedData = $request->validate([
+            'code' => ['required', 'string', Rule::unique('coupons')->ignore($coupon->id)],
+            'type' => ['required', Rule::in(['fixed', 'percent'])],
+            'value' => 'required|numeric|min:0',
+            'expires_at' => 'nullable|date',
         ]);
         
         // Update data kupon
-        $coupon->update($validated);
+        $coupon->update($validatedData);
         
         // Redirect dengan pesan sukses
         return redirect()->route('admin.coupons.index')->with('success', 'Kupon berhasil diperbarui.');

@@ -173,6 +173,11 @@
                                     <i class="bi bi-brush"></i> Pengaturan Halaman
                                 </a>
                             </div>
+                            <div class="col-md-3">
+                                <a href="{{ route('admin.coupons.index') }}" class="btn btn-outline-danger w-100 p-3">
+                                    <i class="bi bi-tag"></i> Manajemen Kupon
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

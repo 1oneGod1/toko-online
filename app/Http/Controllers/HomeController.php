@@ -8,17 +8,25 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     /**
-     * Menampilkan halaman beranda dengan produk unggulan dari database.
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
     {
-        // Ambil 4 produk secara acak dari database untuk ditampilkan
-        $featuredProducts = Product::with('category') // Eager load kategori untuk efisiensi
-                                    ->where('is_featured', true)
-                                    ->latest()
-                                    ->take(4)
-                                    ->get();
+        try {
+            // Coba ambil data produk unggulan dari database
+            $featuredProducts = Product::where('is_featured', true)->take(4)->get();
 
-        return view('welcome', compact('featuredProducts'));
+        } catch (\Exception $e) {
+            // JIKA GAGAL: Hentikan semua proses dan tampilkan pesan error yang jelas.
+            // Ini akan memaksa error muncul di layar, bahkan di ngrok.
+            dd("Terjadi Error Saat Mengambil Data:", $e->getMessage());
+        }
+
+        // Jika berhasil, lanjutkan seperti biasa
+        return view('welcome', [
+            'featuredProducts' => $featuredProducts
+        ]);
     }
 }
